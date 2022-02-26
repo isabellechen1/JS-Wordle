@@ -59,13 +59,30 @@ let currentRow = 0
 let currentLetter = 0
 let isGameOver = false
 
+
+const handleKeyPress = (letter) => {
+    let keyValue = letter.key
+    if (keyValue === 'ENTER'){
+        checkAnswer()
+        return
+    }
+    if (keyValue === 'DELETE' || keyValue === 'Backspace'){
+        deleteLetter()
+        return
+    }
+    if (keyValue.ctrlKey || keyValue.metaKey || keyValue.altKey) {
+        return
+      }
+    addLetter(keyValue.toUpperCase())
+}
+
 keys.forEach(key => {
     const btnKeyboard = document.createElement('button');
     btnKeyboard.textContent = key;
     btnKeyboard.setAttribute('id', key);
     btnKeyboard.setAttribute('data-key', key)
     btnKeyboard.addEventListener('click', () => handleMouseClick(key));
-    btnKeyboard.addEventListener('keydown', () => handleKeyPress(key))
+    document.addEventListener('keydown', handleKeyPress)
     keyboard.append(btnKeyboard)
 });
 
@@ -81,20 +98,8 @@ guessRows.forEach((guessRow, guessRowIndex) => {
     letterDisplay.append(rowElement)
 })
 
+
 const handleMouseClick = (letter) => {
-    if (letter === 'ENTER'){
-        checkAnswer()
-        return
-    }
-    if (letter === 'DELETE'){
-        deleteLetter()
-        return
-    }
-    addLetter(letter)
-}
-
-
-const handleKeyPress = (letter) => {
     if (letter === 'ENTER'){
         checkAnswer()
         return
@@ -126,53 +131,49 @@ const deleteLetter = () => {
     }
 }
 
-const checkAnswer = () => {
-    const guess = guessRows[currentRow].join('')
-    if (currentLetter === 5){
-        addColour()
-       if (wordle == guess){
-            showMessage("Impressive!")
-            isGameOver = true
-            return
-       } else {
-           if (currentRow >= 5){
-               isGameOver = true
-               showMessage("Game Over")
-               return
-           }
-           if (currentRow < 5){
-               currentRow++
-               currentLetter = 0
-           }
-
-       }
-    }
-}
 
 //prevent submitting answer if it's not in the word list.
-//checkDic JSON not used yet
 
 const guessAnswer = guessRows[currentRow].join('')
+let dict =[]
 
-const checkDic = () => {
-    fetch(`http://localhost:8000/check/?word=${guessAnswer}`)
-        .then(response => response.json())
-        .then(json => {
-            if (json == 'Entry word not found') {
-                showMessage('word not in list')
-                return
-            }
-        })
+async function getDict(){
+    const res = await fetch(`http://localhost:8000/check/?word=${guessAnswer}`)
+    const dict = await res.json()
+    addData(dict)
 }
 
+const addData =(object) => {
+    dict.push(object)
+}
 
-const showMessage = (message) => {
-    const messageElement = document.createElement('p')
-    messageElement.textContent = message
-    messageDisplay.append(messageElement)
-    setTimeout(() => {
-        messageDisplay.removeChild(messageElement)
-    }, 2000);
+const checkAnswer = () => {
+    const guess = guessRows[currentRow].join('')
+    if (currentLetter > 4) {
+        getDict()
+        if (dict == 'Entry word not found') {
+            showMessage('word not in list')
+            shakeTiles()
+            return
+        } else {
+            addColour()
+            if (wordle == guess) {
+                showMessage('Magnificent!')
+                isGameOver = true
+                return
+            } else {
+                if (currentRow >= 5) {
+                    isGameOver = true
+                    showMessage('Game Over')
+                    return
+                }
+                if (currentRow < 5) {
+                    currentRow++
+                    currentLetter = 0
+                }
+            }
+        }
+    }
 }
 
 //check answer - press enter - colour for: correct position, correct letter not correct position, wrong
@@ -213,6 +214,24 @@ const addColourToKey = (keyLetter, color) => {
     key.classList.add(color)
 }
 
+const showMessage = (message) => {
+    const messageElement = document.createElement('p')
+    messageElement.textContent = message
+    messageDisplay.append(messageElement)
+    setTimeout(() => {
+        messageDisplay.removeChild(messageElement)
+    }, 2000);
+}
 
-
-
+function shakeTiles(letterAdded) {
+    letterAdded.forEach(letter => {
+      letter.classList.add("shake")
+      letter.addEventListener(
+        "animationend",
+        () => {
+          tile.classList.remove("shake")
+        },
+        { once: true }
+      )
+    })
+  }
