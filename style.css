@@ -82,43 +82,40 @@ body {
     animation: 0.5s linear flipping;
 }
 
-.tile.shake {
+.letter.shake {
     animation: shake 250ms ease-in-out;
   }
   
-  .tile.dance {
-    animation: dance 500ms ease-in-out;
-  }
-  
-  .tile.flip {
-    transform: rotateX(90deg);
-  }
-  
-  @keyframes shake {
-    10% {
-      transform: translateX(-5%);
-    }
-  
-    30% {
-      transform: translateX(5%);
-    }
-  
-    50% {
-      transform: translateX(-7.5%);
-    }
-  
-    70% {
-      transform: translateX(7.5%);
-    }
-  
-    90% {
-      transform: translateX(-5%);
-    }
-  
-    100% {
-      transform: translateX(0);
-    }
-  }
+.letter.dance {
+animation: dance 500ms ease-in-out;
+}
+
+
+@keyframes shake {
+10% {
+    transform: translateX(-5%);
+}
+
+30% {
+    transform: translateX(5%);
+}
+
+50% {
+    transform: translateX(-7.5%);
+}
+
+70% {
+    transform: translateX(7.5%);
+}
+
+90% {
+    transform: translateX(-5%);
+}
+
+100% {
+    transform: translateX(0);
+}
+}
 
 @keyframes flipping {
     0% {

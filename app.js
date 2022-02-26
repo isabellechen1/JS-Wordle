@@ -59,33 +59,6 @@ let currentRow = 0
 let currentLetter = 0
 let isGameOver = false
 
-
-const handleKeyPress = (letter) => {
-    let keyValue = letter.key
-    if (keyValue === 'ENTER'){
-        checkAnswer()
-        return
-    }
-    if (keyValue === 'DELETE' || keyValue === 'Backspace'){
-        deleteLetter()
-        return
-    }
-    if (keyValue.ctrlKey || keyValue.metaKey || keyValue.altKey) {
-        return
-      }
-    addLetter(keyValue.toUpperCase())
-}
-
-keys.forEach(key => {
-    const btnKeyboard = document.createElement('button');
-    btnKeyboard.textContent = key;
-    btnKeyboard.setAttribute('id', key);
-    btnKeyboard.setAttribute('data-key', key)
-    btnKeyboard.addEventListener('click', () => handleMouseClick(key));
-    document.addEventListener('keydown', handleKeyPress)
-    keyboard.append(btnKeyboard)
-});
-
 guessRows.forEach((guessRow, guessRowIndex) => {
     const rowElement = document.createElement('div');
     rowElement.setAttribute('id', 'guessRow-' + guessRowIndex)
@@ -99,17 +72,16 @@ guessRows.forEach((guessRow, guessRowIndex) => {
 })
 
 
-const handleMouseClick = (letter) => {
-    if (letter === 'ENTER'){
-        checkAnswer()
-        return
-    }
-    if (letter === 'DELETE'){
-        deleteLetter()
-        return
-    }
-    addLetter(letter)
-}
+
+keys.forEach(key => {
+    const btnKeyboard = document.createElement('button');
+    btnKeyboard.textContent = key;
+    btnKeyboard.setAttribute('id', key);
+    btnKeyboard.setAttribute('data-key', key)
+    // btnKeyboard.addEventListener('click', () => handleMouseClick(key));
+    // document.addEventListener('keydown', handleKeyPress)
+    keyboard.append(btnKeyboard)
+});
 
 const addLetter = (letter) => {
     if (currentRow < 6 && currentLetter < 5){
@@ -131,9 +103,43 @@ const deleteLetter = () => {
     }
 }
 
+const clicks = () => {
+    document.addEventListener('keydown', handleKeyPress)
+    document.addEventListener('click', handleMouseClick)
+}
+
+const handleKeyPress = (letter) => {
+    let keyValue = letter.key
+    if (keyValue === 'Enter'){
+        checkAnswer()
+        return
+    }
+    if (keyValue === 'DELETE' || keyValue === 'Backspace'){
+        deleteLetter()
+        return
+    }
+    if (keyValue.ctrlKey || keyValue.metaKey || keyValue.altKey) {
+        return
+      }
+    addLetter(keyValue.toUpperCase())
+}
+
+
+const handleMouseClick = (letter) => {
+    if (letter === 'ENTER'){
+        checkAnswer()
+        return
+    }
+    if (letter === 'DELETE'){
+        deleteLetter()
+        return
+    }
+    addLetter(letter)
+}
+
+clicks()
 
 //prevent submitting answer if it's not in the word list.
-
 const guessAnswer = guessRows[currentRow].join('')
 let dict =[]
 
@@ -143,13 +149,13 @@ async function getDict(){
     addData(dict)
 }
 
-const addData =(object) => {
+const addData = (object) => {
     dict.push(object)
 }
 
 const checkAnswer = () => {
     const guess = guessRows[currentRow].join('')
-    if (currentLetter > 4) {
+    if (currentLetter > 4 ) {
         getDict()
         if (dict == 'Entry word not found') {
             showMessage('word not in list')
@@ -159,6 +165,7 @@ const checkAnswer = () => {
             addColour()
             if (wordle == guess) {
                 showMessage('Magnificent!')
+                danceTiles()
                 isGameOver = true
                 return
             } else {
@@ -214,6 +221,7 @@ const addColourToKey = (keyLetter, color) => {
     key.classList.add(color)
 }
 
+
 const showMessage = (message) => {
     const messageElement = document.createElement('p')
     messageElement.textContent = message
@@ -223,15 +231,31 @@ const showMessage = (message) => {
     }, 2000);
 }
 
-function shakeTiles(letterAdded) {
-    letterAdded.forEach(letter => {
-      letter.classList.add("shake")
-      letter.addEventListener(
-        "animationend",
-        () => {
-          tile.classList.remove("shake")
-        },
-        { once: true }
-      )
+
+const shakeTiles = () =>  {
+    const shakeRow = document.querySelector('#guessRow-' + currentRow).childNodes
+    shakeRow.forEach(selected => {
+        selected.classList.add('shake')
+        selected.addEventListener(
+            'animationend',
+            () => {
+                selected.classList.remove('shake')
+            },
+            { once: true }
+          )
     })
-  }
+}
+
+const danceTiles = () =>  {
+    const danceRow = document.querySelector('#guessRow-' + currentRow).childNodes
+    danceRow.forEach(selected => {
+        selected.classList.add('dance')
+        selected.addEventListener(
+            'animationend',
+            () => {
+                selected.classList.remove('dance')
+            },
+            { once: true }
+          )
+    })
+}
