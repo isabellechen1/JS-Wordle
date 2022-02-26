@@ -71,43 +71,6 @@ guessRows.forEach((guessRow, guessRowIndex) => {
     letterDisplay.append(rowElement)
 })
 
-
-
-keys.forEach(key => {
-    const btnKeyboard = document.createElement('button');
-    btnKeyboard.textContent = key;
-    btnKeyboard.setAttribute('id', key);
-    btnKeyboard.setAttribute('data-key', key)
-    // btnKeyboard.addEventListener('click', () => handleMouseClick(key));
-    // document.addEventListener('keydown', handleKeyPress)
-    keyboard.append(btnKeyboard)
-});
-
-const addLetter = (letter) => {
-    if (currentRow < 6 && currentLetter < 5){
-        const letterAdded = document.getElementById('guessRow-' + currentRow + '-letter-' + currentLetter)
-        letterAdded.textContent = letter
-        guessRows[currentRow][currentLetter] = letter
-        letterAdded.setAttribute('data', letter)
-        currentLetter++
-    }
-}
-
-const deleteLetter = () => {
-    if (currentLetter > 0){
-        currentLetter--
-        const letterAdded = document.getElementById('guessRow-' + currentRow + '-letter-' + currentLetter)
-        letterAdded.textContent = ""
-        guessRows[currentRow][currentLetter] = ""
-        letterAdded.setAttribute('data', "")
-    }
-}
-
-const clicks = () => {
-    document.addEventListener('keydown', handleKeyPress)
-    document.addEventListener('click', handleMouseClick)
-}
-
 const handleKeyPress = (letter) => {
     let keyValue = letter.key
     if (keyValue === 'Enter'){
@@ -137,7 +100,35 @@ const handleMouseClick = (letter) => {
     addLetter(letter)
 }
 
-clicks()
+keys.forEach(key => {
+    const btnKeyboard = document.createElement('button');
+    btnKeyboard.textContent = key;
+    btnKeyboard.setAttribute('id', key);
+    btnKeyboard.setAttribute('data-key', key)
+    btnKeyboard.addEventListener('click', () => handleMouseClick(key));
+    document.addEventListener('keydown', handleKeyPress)
+    keyboard.append(btnKeyboard)
+});
+
+const addLetter = (letter) => {
+    if (currentRow < 6 && currentLetter < 5){
+        const letterAdded = document.getElementById('guessRow-' + currentRow + '-letter-' + currentLetter)
+        letterAdded.textContent = letter
+        guessRows[currentRow][currentLetter] = letter
+        letterAdded.setAttribute('data', letter)
+        currentLetter++
+    }
+}
+
+const deleteLetter = () => {
+    if (currentLetter > 0){
+        currentLetter--
+        const letterAdded = document.getElementById('guessRow-' + currentRow + '-letter-' + currentLetter)
+        letterAdded.textContent = ""
+        guessRows[currentRow][currentLetter] = ""
+        letterAdded.setAttribute('data', "")
+    }
+}
 
 //prevent submitting answer if it's not in the word list.
 const guessAnswer = guessRows[currentRow].join('')
@@ -184,6 +175,20 @@ const checkAnswer = () => {
 }
 
 //check answer - press enter - colour for: correct position, correct letter not correct position, wrong
+const showMessage = (message) => {
+    const messageElement = document.createElement('p')
+    messageElement.textContent = message
+    messageDisplay.append(messageElement)
+    setTimeout(() => {
+        messageDisplay.removeChild(messageElement)
+    }, 2000);
+}
+
+const addColourToKey = (keyLetter, color) => {
+    const key = document.getElementById(keyLetter)
+    key.classList.add(color)
+}
+
 const addColour = () => { 
     const flipRow = document.querySelector('#guessRow-' + currentRow).childNodes
     let checkWordle = wordle
@@ -199,6 +204,7 @@ const addColour = () => {
             checkWordle = checkWordle.replace(guess.letter, '')
         }
     });
+ 
 
     guess.forEach(guess => {
         if (checkWordle.includes(guess.letter)){
@@ -216,20 +222,7 @@ const addColour = () => {
     })
 }
 
-const addColourToKey = (keyLetter, color) => {
-    const key = document.getElementById(keyLetter)
-    key.classList.add(color)
-}
 
-
-const showMessage = (message) => {
-    const messageElement = document.createElement('p')
-    messageElement.textContent = message
-    messageDisplay.append(messageElement)
-    setTimeout(() => {
-        messageDisplay.removeChild(messageElement)
-    }, 2000);
-}
 
 
 const shakeTiles = () =>  {
