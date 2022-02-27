@@ -34,7 +34,7 @@ app.get('/check', (req, res) => {
     params: {entry: word},
     headers: {
         'x-rapidapi-host': 'twinword-word-graph-dictionary.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPID_API_KEY
+        'x-rapidapi-key': process.env.RAPID_API_KEY_2
     }
     };
 
